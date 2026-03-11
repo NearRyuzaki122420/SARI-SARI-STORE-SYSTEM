@@ -3,17 +3,18 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   // Android emulator:
-  static const String baseUrl = 'http://10.0.2.2:5000/api';
+  static const String baseUrl = 'https://31a0-143-44-164-151.ngrok-free.app/api';
 
   // Real phone example:
   // static const String baseUrl = 'http://192.168.1.5:5000/api';
 
   static Map<String, String> _headers([String? token]) {
-    return {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-  }
+  return {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
+    if (token != null) 'Authorization': 'Bearer $token',
+  };
+}
 
   static dynamic _decode(http.Response response) {
     final dynamic data = jsonDecode(response.body);
@@ -25,7 +26,10 @@ class ApiService {
     throw Exception(data['message'] ?? 'Request failed');
   }
 
-  static Future<Map<String, dynamic>> login(String email, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String email,
+    String password,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/login'),
       headers: _headers(),
@@ -42,11 +46,7 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/register'),
       headers: _headers(),
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-      }),
+      body: jsonEncode({'name': name, 'email': email, 'password': password}),
     );
     return Map<String, dynamic>.from(_decode(response));
   }
@@ -67,7 +67,10 @@ class ApiService {
     return List<dynamic>.from(_decode(response));
   }
 
-  static Future<List<dynamic>> getProfitReport(String token, String filter) async {
+  static Future<List<dynamic>> getProfitReport(
+    String token,
+    String filter,
+  ) async {
     final response = await http.get(
       Uri.parse('$baseUrl/sales/profit-report?filter=$filter'),
       headers: _headers(token),
