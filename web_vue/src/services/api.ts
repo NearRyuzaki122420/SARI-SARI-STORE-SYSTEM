@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://9b00-49-145-37-4.ngrok-free.app/api'
+  baseURL: 'https://sari-sari-store-system.onrender.com/api'
 })
 
 api.interceptors.request.use((config) => {
@@ -9,7 +9,6 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
-  config.headers['ngrok-skip-browser-warning'] = 'true'
   return config
 })
 
