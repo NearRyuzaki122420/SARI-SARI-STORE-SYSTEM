@@ -3,18 +3,18 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   // Android emulator:
-  static const String baseUrl = 'https://31a0-143-44-164-151.ngrok-free.app/api';
+  static const String baseUrl =
+      'https://sari-sari-store-system.onrender.com/api';
 
   // Real phone example:
   // static const String baseUrl = 'http://192.168.1.5:5000/api';
 
   static Map<String, String> _headers([String? token]) {
-  return {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-    if (token != null) 'Authorization': 'Bearer $token',
-  };
-}
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 
   static dynamic _decode(http.Response response) {
     final dynamic data = jsonDecode(response.body);

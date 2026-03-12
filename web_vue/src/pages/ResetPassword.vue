@@ -1,36 +1,24 @@
 <template>
   <div class="auth-page">
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-
     <div class="auth-card">
-      <div class="brand">Sari-Sari Store</div>
-      <h1>Welcome Back</h1>
-      <p class="subtitle">Login to manage your inventory, sales, and profits.</p>
+      <div class="brand">Set New Password</div>
+      <h1>Reset Password</h1>
+      <p class="subtitle">Enter your new password below.</p>
 
-      <form @submit.prevent="login" class="auth-form">
+      <form @submit.prevent="submitResetPassword" class="auth-form">
         <div class="input-group">
-          <label>Email</label>
-          <input v-model="email" type="email" placeholder="Enter your email" required />
+          <label>New Password</label>
+          <input v-model="newPassword" type="password" placeholder="Enter new password" required />
         </div>
 
-        <div class="input-group">
-          <label>Password</label>
-          <input v-model="password" type="password" placeholder="Enter your password" required />
-        </div>
-
-        <div class="forgot-wrap">
-          <router-link to="/forgot-password">Forgot Password?</router-link>
-        </div>
-
-        <button type="submit" class="primary-btn">Login</button>
+        <button type="submit" class="primary-btn">Reset Password</button>
       </form>
 
+      <p v-if="message" class="success">{{ message }}</p>
       <p v-if="error" class="error">{{ error }}</p>
 
       <p class="switch-link">
-        Don’t have an account?
-        <router-link to="/register">Create one</router-link>
+        <router-link to="/">Back to Login</router-link>
       </p>
     </div>
   </div>
@@ -38,27 +26,34 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
-import { useRouter } from 'vue-router'
 
-const email = ref('')
-const password = ref('')
-const error = ref('')
+const route = useRoute()
 const router = useRouter()
+const token = route.query.token as string
 
-const login = async () => {
+const newPassword = ref('')
+const message = ref('')
+const error = ref('')
+
+const submitResetPassword = async () => {
+  message.value = ''
   error.value = ''
 
   try {
-    const res = await api.post('/auth/login', {
-      email: email.value,
-      password: password.value
+    const res = await api.post('/auth/reset-password', {
+      token,
+      newPassword: newPassword.value
     })
 
-    localStorage.setItem('token', res.data.token)
-    router.push('/dashboard')
+    message.value = res.data.message || 'Password reset successfully'
+
+    setTimeout(() => {
+      router.push('/')
+    }, 1500)
   } catch (err: any) {
-    error.value = err.response?.data?.message || 'Invalid login credentials'
+    error.value = err.response?.data?.message || 'Failed to reset password'
   }
 }
 </script>
@@ -71,43 +66,15 @@ const login = async () => {
   justify-content: center;
   align-items: center;
   padding: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.bg-shape {
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(60px);
-  opacity: 0.35;
-}
-
-.shape-1 {
-  width: 280px;
-  height: 280px;
-  background: #60a5fa;
-  top: 5%;
-  left: 8%;
-}
-
-.shape-2 {
-  width: 320px;
-  height: 320px;
-  background: #a78bfa;
-  bottom: 8%;
-  right: 10%;
 }
 
 .auth-card {
-  position: relative;
-  z-index: 1;
   width: 100%;
   max-width: 430px;
   padding: 32px;
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.18);
   color: white;
@@ -124,7 +91,7 @@ const login = async () => {
 }
 
 .auth-card h1 {
-  font-size: 34px;
+  font-size: 32px;
   margin: 0 0 8px;
   font-weight: 800;
 }
@@ -166,18 +133,6 @@ const login = async () => {
   color: rgba(255, 255, 255, 0.68);
 }
 
-.forgot-wrap {
-  text-align: right;
-  margin-top: -4px;
-}
-
-.forgot-wrap a {
-  color: #fde68a;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-}
-
 .primary-btn {
   margin-top: 8px;
   padding: 14px;
@@ -188,23 +143,25 @@ const login = async () => {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.28);
+}
+
+.success {
+  margin-top: 14px;
+  color: #bbf7d0;
 }
 
 .error {
   margin-top: 14px;
   color: #fecaca;
-  font-size: 14px;
 }
 
 .switch-link {
   margin-top: 20px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.88);
 }
 
 .switch-link a {
-  color: #fde68a;
+  color: #bfdbfe;
   font-weight: 700;
   text-decoration: none;
 }
