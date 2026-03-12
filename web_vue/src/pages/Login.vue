@@ -14,10 +14,20 @@
           <input v-model="email" type="email" placeholder="Enter your email" required />
         </div>
 
-        <div class="input-group">
-          <label>Password</label>
-          <input v-model="password" type="password" placeholder="Enter your password" required />
-        </div>
+            <div class="input-group">
+            <label>Password</label>
+            <div class="password-wrap">
+              <input
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Enter your password"
+                required
+              />
+              <button type="button" class="toggle-btn" @click="showPassword = !showPassword">
+                {{ showPassword ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </div>
 
         <div class="forgot-wrap">
           <router-link to="/forgot-password">Forgot Password?</router-link>
@@ -44,6 +54,7 @@ import { useRouter } from 'vue-router'
 const email = ref('')
 const password = ref('')
 const error = ref('')
+const showPassword = ref(false)
 const router = useRouter()
 
 const login = async () => {
@@ -207,5 +218,25 @@ const login = async () => {
   color: #fde68a;
   font-weight: 700;
   text-decoration: none;
+}
+
+.password-wrap {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.password-wrap input {
+  flex: 1;
+}
+
+.toggle-btn {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
 }
 </style>
