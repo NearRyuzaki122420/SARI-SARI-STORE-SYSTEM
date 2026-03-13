@@ -126,4 +126,25 @@ class ApiService {
     );
     return Map<String, dynamic>.from(_decode(response));
   }
+
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/auth/forgot-password'),
+    headers: _headers(),
+    body: jsonEncode({'email': email}),
+  );
+  return Map<String, dynamic>.from(_decode(response));
+}
+
+static Future<Map<String, dynamic>> resetPassword(String token, String newPassword) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/auth/reset-password'),
+    headers: _headers(),
+    body: jsonEncode({
+      'token': token,
+      'newPassword': newPassword,
+    }),
+  );
+  return Map<String, dynamic>.from(_decode(response));
+}
 }

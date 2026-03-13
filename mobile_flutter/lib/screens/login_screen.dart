@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import 'dashboard_screen.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -49,12 +50,21 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget buildField(String label, TextEditingController controller,
-      {bool obscure = false}) {
+  Widget buildField(
+    String label,
+    TextEditingController controller, {
+    bool obscure = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -136,21 +146,40 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       if (error.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        Text(error, style: const TextStyle(color: Colors.redAccent)),
+                        Text(
+                          error,
+                          style: const TextStyle(color: Colors.redAccent),
+                        ),
                       ],
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterScreen(),
+                            ),
                           );
                         },
                         child: const Text(
                           'No account yet? Register',
                           style: TextStyle(color: Colors.amberAccent),
                         ),
-                      )
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ForgotPasswordScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(color: Colors.amberAccent),
+                        ),
+                      ),
                     ],
                   ),
                 ),

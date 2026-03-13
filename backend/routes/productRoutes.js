@@ -6,13 +6,15 @@ const {
   addProduct,
   restockProduct,
   markProductSold,
-  deleteProduct
+  deleteProduct,
+  updateProduct
 } = require('../controllers/productController');
 
 router.get('/', auth, getProducts);
 router.post('/', auth, addProduct);
 router.put('/restock/:id', auth, restockProduct);
 router.put('/sold/:id', auth, markProductSold);
+router.put('/:id', auth, updateProduct);
 router.delete('/:id', auth, deleteProduct);
 
 module.exports = router;

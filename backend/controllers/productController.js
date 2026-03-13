@@ -131,7 +131,34 @@ exports.markProductSold = (req, res) => {
     );
   });
 }
+  exports.updateProduct = (req, res) => {
+  const { id } = req.params;
+  const {
+    product_code,
+    product_name,
+    product_type,
+    cost_price,
+    selling_price
+  } = req.body;
 
+  if (!product_code || !product_name || !product_type || cost_price == null || selling_price == null) {
+    return res.status(400).json({ message: 'All editable product fields are required' });
+  }
+
+  db.query(
+    `UPDATE products
+     SET product_code = ?, product_name = ?, product_type = ?, cost_price = ?, selling_price = ?
+     WHERE id = ?`,
+    [product_code, product_name, product_type, cost_price, selling_price, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: 'Failed to update product', error: err });
+      }
+
+      res.json({ message: 'Product updated successfully' });
+    }
+  );
+};
 exports.deleteProduct = (req, res) => {
   const { id } = req.params;
 

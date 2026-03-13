@@ -46,7 +46,12 @@
         <button @click="loadProfitReport('day')">By Day</button>
         <button @click="loadProfitReport('week')">By Week</button>
         <button @click="loadProfitReport('month')">By Month</button>
+        <button @click="windowPrint">Print Report</button>
+        <button @click="exportCSV">Export CSV</button>
       </div>
+
+
+      <ProfitChart :report="profitReport" />
 
       <div class="table-wrap" v-if="profitReport.length">
         <table>
@@ -76,6 +81,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
+import ProfitChart from '../components/ProfitChart.vue'
 
 const products = ref<any[]>([])
 const sales = ref<any[]>([])
@@ -119,9 +125,46 @@ const toggleDarkMode = () => {
   localStorage.setItem('darkMode', String(isDark.value))
 }
 
+const windowPrint = () => {
+  window.print()
+}
+
 const logout = () => {
   localStorage.removeItem('token')
   router.push('/')
+}
+
+const lowStockCount = computed(() =>
+products.value.filter((p) => Number(p.quantity) > 0 && Number(p.quantity) <= 5).length
+)
+
+const outofStock = computed(() =>
+products.value.filter((p) => Number(p.quantity) == 0).length
+)
+
+const exportCSV = () => {
+  if (!profitReport.value.length) return
+
+  const headers = ['Period', 'Total Sales', 'Total Profit']
+  const rows = profitReport.value.map((item) => [
+    item.label,
+    item.total_sales,
+    item.total_profit
+  ])
+
+  const csvContent =
+    [headers, ...rows]
+      .map((row) => row.join(','))
+      .join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', 'profit_report.csv')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 </script>
 

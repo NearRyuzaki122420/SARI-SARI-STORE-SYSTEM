@@ -90,8 +90,8 @@
               <td>₱{{ Number(product.cost_price).toFixed(2) }}</td>
               <td>₱{{ Number(product.selling_price).toFixed(2) }}</td>
               <td>
-                <span :class="product.status === 'Sold' ? 'status sold' : 'status available'">
-                  {{ product.status }}
+                <span :class="getStockStatusClass(product.quantity)">
+                  {{ getStockStatusText(product.quantity) }}
                 </span>
               </td>
               <td>
@@ -112,6 +112,7 @@
                 <button class="delete-btn" @click="deleteProduct(product.id)">
                   Delete
                 </button>
+                <button class="edit-btn" @click="openEditModal(product)">Edit</button>
               </td>
             </tr>
           </tbody>
@@ -130,6 +131,7 @@ const message = ref('')
 const error = ref('')
 const sellQty = ref<Record<number, number>>({})
 const isDark = ref(localStorage.getItem('darkMode') === 'true')
+const showEditModal = ref(false)
 
 const addForm = ref({
   product_code: '',
@@ -145,6 +147,15 @@ const restockForm = ref({
   quantity: 1,
   cost_price: null as number | null,
   selling_price: null as number | null
+})
+
+const editForm = ref({
+  id: null as number | null,
+  product_code: '',
+  product_name: '',
+  product_type: '',
+  cost_price: 0,
+  selling_price: 0
 })
 
 const fetchProducts = async () => {
@@ -243,6 +254,32 @@ const sellProduct = async (id: number) => {
   }
 }
 
+const openEditModal = (product:any) => {
+  editForm.value = {
+    id: product.id,
+    product_code: product.product_code,
+    product_name: product.product_name,
+    product_type: product.product_name,
+    cost_price: Number(product.cost_price),
+    selling_price: Number(product.selling_price)
+  }
+  showEditModal.value = true
+}
+
+const updateProduct = async () => {
+  message.value = ''
+  error.value = ''
+
+  try {
+    const res = await api.put('/products/${editForm.value.id}', editForm.value)
+    message.value = res.data.message
+    showEditModal.value = false
+    await fetchProducts()
+  } catch (err:any) {
+    error.value = err.response?.data?.message || 'Failed to update product'
+  }
+}
+
 const deleteProduct = async (id: number) => {
   message.value = ''
   error.value = ''
@@ -262,6 +299,18 @@ const deleteProduct = async (id: number) => {
 const toggleDarkMode = () => {
   isDark.value = !isDark.value
   localStorage.setItem('darkMode', String(isDark.value))
+}
+
+const getStockStatusText = (qty: number) => {
+  if (qty === 0) return 'Out of Stock'
+  if (qty <= 5) return 'Low Stock'
+  return 'Available'
+}
+
+const getStockStatusClass = (qty: number) => {
+  if (qty === 0) return 'status out'
+  if (qty <= 5) return 'status low'
+  return 'status available'
 }
 </script>
 
@@ -472,5 +521,54 @@ td {
   margin-top: 14px;
   color: #dc2626;
   font-weight: 600;
+}
+
+.status.out {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status.low {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status.available {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.edit-btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.22);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.edit-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.delete-btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.22);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.delete-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
 </style>
