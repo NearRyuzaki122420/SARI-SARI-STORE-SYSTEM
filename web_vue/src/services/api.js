@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://https://sari-sari-store-system.onrender.com/api'
+  baseURL: 'https://sari-sari-store-system.onrender.com/api'
 })
 
 api.interceptors.request.use((config) => {
